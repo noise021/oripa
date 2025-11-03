@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>プチュンガチャ | NOISE021</title>
+  <script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+  <style>
+    body { font-family: 'Bangers', cursive; background: #111; color: #fff; text-align: center; padding: 20px; }
+    h2 { color: #ff6d00; text-shadow: 0 0 10px #ff6d00; }
+    button { background: #ff6d00; color: white; padding: 15px 30px; font-size: 20px; border-radius: 15px; cursor: pointer; margin: 10px; }
+    button:disabled { background: #666; }
+    #animation { width: 300px; height: 300px; margin: 20px auto; }
+    .result { font-size: 24px; color: #0f0; margin: 20px; }
+    .back { background: #444; font-size: 16px; padding: 10px 20px; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h2>プチュンガチャ</h2>
+  <p>1口 <strong>50pt</strong> | 残 <strong>876</strong>/1000</p>
+  <button id="drawBtn" onclick="draw()">ガチャを引く！</button>
+  <button class="back" onclick="location.href='/'">トップに戻る</button>
+  <div id="animation"></div>
+  <div id="result" class="result"></div>
+
+  <script>
+    let points = parseInt(localStorage.getItem('noise021_pts') || '1000');
+    document.getElementById('drawBtn').innerText = `ガチャを引く！ (${points}pt)`;
+
+    async function draw() {
+      if (points < 50) { alert('ポイント不足！'); return; }
+      const btn = document.getElementById('drawBtn');
+      btn.disabled = true; btn.innerText = '抽選中...';
+
+      const rand = Math.random();
+      let result = { name: '10pt', value: 10, rare: false };
+      if (rand < 0.01) result = { name: 'PSA10 リーリエ', value: 3000, rare: true };
+      else if (rand < 0.05) result = { name: '未開封BOX', value: 5000, rare: true };
+      else if (rand < 0.2) result = { name: '100pt', value: 100, rare: false };
+
+      points = points - 50 + result.value;
+      localStorage.setItem('noise021_pts', points);
+
+      document.getElementById('result').innerHTML = `<strong style="color:${result.rare?'#ff0':'#0f0'}">${result.name} 当たり！ (+${result.value}pt)</strong>`;
+
+      if (result.rare) {
+        lottie.loadAnimation({
+          container: document.getElementById('animation'),
+          renderer: 'svg',
+          loop: false,
+          autoplay: true,
+          path: 'https://assets3.lottiefiles.com/packages/lf20_7W0i7i.json'
+        });
+      }
+
+      btn.disabled = false;
+      btn.innerText = `ガチャを引く！ (${points}pt)`;
+    }
+  </script>
+</body>
+</html>
